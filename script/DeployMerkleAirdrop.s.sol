@@ -1,7 +1,8 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import { MerkleAirDrop, IERC20 } from "../src/MerkleAirDrop.sol";
+import { MerkleAirDrop} from "../src/MerkleAirDrop.sol";
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import { Script } from "forge-std/Script.sol";
 import { BagelToken } from "../src/BagelToken.sol";
 import { console } from "forge-std/console.sol";
@@ -15,7 +16,7 @@ contract DeployMerkleAirdrop is Script {
     function deployMerkleAirdrop() public returns (MerkleAirDrop, BagelToken) {
         vm.startBroadcast();
         BagelToken bagelToken = new BagelToken();
-        MerkleAirDrop airdrop = new MerkleAirDrop(ROOT, IERC20(bagelToken));
+        MerkleAirDrop airdrop = new MerkleAirDrop(ROOT, IERC20(address(bagelToken)));
         // Send Bagel tokens -> Merkle Air Drop contract
         bagelToken.mint(bagelToken.owner(), AMOUNT_TO_TRANSFER);
         IERC20(bagelToken).transfer(address(airdrop), AMOUNT_TO_TRANSFER);
