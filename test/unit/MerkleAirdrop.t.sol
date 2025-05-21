@@ -8,7 +8,7 @@ import {ZkSyncChainChecker} from "foundry-devops/src/ZkSyncChainChecker.sol";
 contract MerkleAirdropTest is ZkSyncChainChecker,Test {
     MerkleAirDrop airdrop;
     BagelToken token;
-
+    address gasPayer;
     address user;
     uint256 userPrivKey;
 
@@ -33,9 +33,15 @@ contract MerkleAirdropTest is ZkSyncChainChecker,Test {
         token.mint(token.owner(), amountToSend);
         token.transfer(address(airdrop), amountToSend);
     }
+          gasPayer = makeAddr("gasPayer");
         (user, userPrivKey) = makeAddrAndKey("user");
     }
-   function testUsersCanClaim() public view{
+
+ function signMessage(uint256 privKey, address account) public view returns (uint8 v, bytes32 r, bytes32 s) {
+        bytes32 hashedMessage = airdrop.getMessageHash(account, amountToCollect);
+        (v, r, s) = vm.sign(privKey, hashedMessage);
+    }
+   function testUsersCanClaim() public {
         uint256 startingBalance = token.balanceOf(user);
 
         // get the signature
